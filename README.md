@@ -1,6 +1,6 @@
-# Github Enterprise Python API
+# GitHub Enterprise Python API
 
-Provides an API over the Site Admin tools for Github Enterprise.
+Provides an API over the Site Admin tools for GitHub Enterprise.
 
 Requires a Site Admin username and password to login to the UI via Selenium.
 
@@ -41,3 +41,8 @@ This simple example demonstrates the API.
     
                 # force re-sync the removed users to make the seats available immediately
                 ghe.resync_user_ldap(username)
+
+## Compatibility
+
+This library has been tested against GitHub Enterprise version 2.9.4.
+
