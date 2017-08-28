@@ -17,6 +17,7 @@
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from pyvirtualdisplay import Display
 
 
 class GithubEnterprise(object):
@@ -32,12 +33,21 @@ class GithubEnterprise(object):
     # Default to ignoring system actions like LDAP sync/suspend/unsuspend for more meaningful events
     AUDIT_FILTER = "-action:user.ldap_sync -action:user.suspend -action:user.unsuspend"
 
-    def __init__(self, username, password, base_url):
+    def __init__(self, username, password, base_url, virtual=False, headless=False):
+        """ Create a new GithubEnterprise API connector.
+        :param username: your site admin username
+        :param password: your site admin password
+        :param base_url: the URL to access your GitHub Enterprise instance
+        :param virtual: true iff you want to create a virtual display
+        :param headless: true iff you want to run in headless mode
+        """
         self.username = username
         self.password = password
         self.base_url = base_url
+        self.display = Display(visible=0, size=(800, 600)) if virtual else None
         self.chrome_options = Options()
-        self.chrome_options.add_argument("--headless")
+        if headless:
+            self.chrome_options.add_argument("--headless")
 
     def get_dormant_users(self):
         """Returns the list of Dormant Users.
@@ -105,6 +115,8 @@ class GithubEnterprise(object):
         """
         Automatically connect to Github Enterprise
         """
+        if self.display:
+            self.display.start()
         self.driver = webdriver.Chrome(chrome_options=self.chrome_options)
         self.driver.implicitly_wait(30)
         self._login()
@@ -115,6 +127,8 @@ class GithubEnterprise(object):
         Automatically disconnect from Github Enterprise
         """
         self.driver.quit()
+        if self.display:
+            self.display.stop()
 
     def _login(self):
         self.driver.get(self.base_url + "/login")
